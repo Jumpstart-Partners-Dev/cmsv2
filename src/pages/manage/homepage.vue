@@ -292,7 +292,7 @@ export default {
 
     reorderBestStore () {
       this.toggleBestStore = true
-      this.backup = this.topStores
+      this.backup = this.bestStores
     },
 
     bestStoreReorder () {
@@ -315,7 +315,7 @@ export default {
 
     cancelbestStoreReorder () {
       this.toggleBestStore = false
-      this.bestStores = this.backup
+      //this.bestStores = this.backup
     },
 
 
