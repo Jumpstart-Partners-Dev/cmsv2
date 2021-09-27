@@ -15,7 +15,7 @@
           www.couponsplusdeals.com
         </q-toolbar-title>
 
-        <div>Content Management v.1.0.0</div>
+        <div>Content Management v.1.0.1</div>
       </q-toolbar>
     </q-header>
 
@@ -64,6 +64,12 @@ const linksList = [
     link: '/#/stores'
   },
   {
+    title: 'Blogs',
+    caption: '',
+    icon: 'article',
+    link: '/#/blogs'
+  },
+  {
     title: 'Manage Homepage',
     caption: '',
     icon: 'home',
@@ -74,6 +80,18 @@ const linksList = [
     caption: '',
     icon: 'mail',
     link: '/#/subscribers'
+  },
+  {
+    title: 'SEO',
+    caption: '',
+    icon: 'search',
+    link: '/#/seo'
+  },
+  {
+    title: 'Sitemap Manager',
+    caption: '',
+    icon: 'web',
+    link: '/#/sitemap'
   },
   {
     title: 'Admin',

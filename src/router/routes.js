@@ -9,6 +9,14 @@ const routes = [
         path: '/manage/homepage', component: () => import('pages/manage/homepage.vue'),
       },{
         path: '/subscribers', component: () => import('pages/Subscribers.vue')
+      },{
+        path: '/seo', component: () => import('pages/SEO.vue')
+      },{
+        path: '/stores', component: () => import('pages/Stores.vue')
+      },{
+        path: '/sitemap', component: () => import('pages/Sitemap.vue')
+      },{
+        path: '/blogs', component: () => import('pages/Blogs.vue')
       }
     ]
   },

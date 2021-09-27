@@ -1,26 +1,21 @@
-# cmsv2 (cmsv2)
+# Account: CouponsPlusDeals
+# Repo: Jumpstart-Partners-Dev
+# Project: cmsv2
+# Url: github.com/Jumpstart-Partners-Dev/cmsv2
+# Type: Private Repo
 
-cmsv2
+### > insert here *
 
-## Install the dependencies
-```bash
-npm install
-```
+## branch:master (commit 3) - Sep 10, 2021
+- Fix reordering of slider stores
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
+## branch:master (commit 2) - Sep 08, 2021
+- Added route /subscriber
+- Added Subscriber Page
 
-### Lint the files
-```bash
-npm run lint
-```
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://v2.quasar.dev/quasar-cli/quasar-conf-js).
+## branch:master (commit 1) - Sep 07, 2021
+- Initial Commit
+- Added Page Layout
+- Added routes /manage
+- Added Manage Homepage
+- Set axios to api.couponsplusdeals.com
