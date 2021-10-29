@@ -88,6 +88,12 @@ const linksList = [
     link: '/#/seo'
   },
   {
+    title: 'Pages',
+    caption: '',
+    icon: 'link',
+    link: '/#/pages'
+  },
+  {
     title: 'Sitemap Manager',
     caption: '',
     icon: 'web',

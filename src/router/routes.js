@@ -17,6 +17,8 @@ const routes = [
         path: '/sitemap', component: () => import('pages/Sitemap.vue')
       },{
         path: '/blogs', component: () => import('pages/Blogs.vue')
+      },{
+        path: '/pages', component: () => import('pages/Pages.vue')
       }
     ]
   },
