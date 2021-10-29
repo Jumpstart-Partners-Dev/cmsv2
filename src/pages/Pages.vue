@@ -64,7 +64,7 @@
                   {{ props.row.title }}
                 </q-td>
                 <q-td key="slug" :props="props">
-                  <a :href="'https://www.couponspludeals.com/page/' + props.row.slug" target="_blank">https://www.couponsplusdeals.com/page/{{ props.row.slug }}</a>
+                  <a :href="'https://www.couponsplusdeals.com/page/' + props.row.slug" target="_blank">https://www.couponsplusdeals.com/page/{{ props.row.slug }}</a>
                 </q-td>
                 <q-td key="bing" :props="props">
                   <q-icon name="check_circle" class="text-green" style="font-size:30px"/>
