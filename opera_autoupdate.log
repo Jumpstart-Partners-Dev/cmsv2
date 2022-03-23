@@ -1,0 +1,14 @@
+[205247:205247:0305/015552.717704:86665751782:ERROR:database.cc(1780)] autoupdate_checker.sqlite SQLite error: code 8 errno 0: attempt to write a readonly database sql: INSERT OR REPLACE INTO store VALUES (?,?);
+[205247:205247:0305/015554.039917:86667073991:ERROR:database.cc(1780)] autoupdate_checker.sqlite SQLite error: code 8 errno 0: attempt to write a readonly database sql: INSERT OR REPLACE INTO store VALUES (?,?);
+[205247:205247:0305/015554.039986:86667074058:ERROR:update_check_handler_impl.cc(262)] [AU] An important error "GLOBAL STORAGE WR FAILED [STEP 1]" occured on update checking. Retrying 1 time.
+[205247:205247:0305/015556.040362:86669074447:ERROR:database.cc(1780)] autoupdate_checker.sqlite SQLite error: code 8 errno 0: attempt to write a readonly database sql: INSERT OR REPLACE INTO store VALUES (?,?);
+[205247:205247:0305/015556.040559:86669074640:ERROR:update_check_handler_impl.cc(262)] [AU] An important error "GLOBAL STORAGE WR FAILED [STEP 1]" occured on update checking. Retrying 2 time.
+[205247:205247:0305/015558.040929:86671075015:ERROR:database.cc(1780)] autoupdate_checker.sqlite SQLite error: code 8 errno 0: attempt to write a readonly database sql: INSERT OR REPLACE INTO store VALUES (?,?);
+[205247:205247:0305/015558.041106:86671075188:ERROR:update_check_handler_impl.cc(262)] [AU] An important error "GLOBAL STORAGE WR FAILED [STEP 1]" occured on update checking. Retrying 3 time.
+[205247:205247:0305/015600.041550:86673075636:ERROR:database.cc(1780)] autoupdate_checker.sqlite SQLite error: code 8 errno 0: attempt to write a readonly database sql: INSERT OR REPLACE INTO store VALUES (?,?);
+[205247:205247:0305/015600.041710:86673075791:ERROR:update_check_handler_impl.cc(262)] [AU] An important error "GLOBAL STORAGE WR FAILED [STEP 1]" occured on update checking. Retrying 4 time.
+[205247:205247:0305/015602.042196:86675076283:ERROR:database.cc(1780)] autoupdate_checker.sqlite SQLite error: code 8 errno 0: attempt to write a readonly database sql: INSERT OR REPLACE INTO store VALUES (?,?);
+[205247:205247:0305/015602.042384:86675076464:ERROR:update_check_handler_impl.cc(262)] [AU] An important error "GLOBAL STORAGE WR FAILED [STEP 1]" occured on update checking. Retrying 5 time.
+[205247:205247:0305/015604.042606:86677076682:ERROR:database.cc(1780)] autoupdate_checker.sqlite SQLite error: code 8 errno 0: attempt to write a readonly database sql: INSERT OR REPLACE INTO store VALUES (?,?);
+[205247:205247:0305/015604.042669:86677076739:ERROR:update_check_handler_impl.cc(262)] [AU] An important error "GLOBAL STORAGE WR FAILED [STEP 1]" occured on update checking. Retrying 6 time.
+[205247:205247:0305/015604.745895:86677779969:INFO:protocol_impl.cc(793)] Main update resource available: false

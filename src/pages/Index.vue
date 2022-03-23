@@ -12,6 +12,20 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'PageIndex'
+  name: 'PageIndex',
+  data () {
+    return {
+
+    }
+  },
+  methods: {
+    checkLogin() {
+      
+    }
+  },
+
+  created () {
+    this.checkLogin()
+  }
 })
 </script>
