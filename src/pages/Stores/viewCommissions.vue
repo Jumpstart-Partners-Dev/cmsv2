@@ -151,10 +151,29 @@
               <q-tab-panels v-model="commissions.tab" animated class="">
                 <q-tab-panel name="settings">
                   <div class="q-gutter-md">
-                    <q-input label="Store ID" outlined dense v-model="commissions.selected.store_id" disable></q-input>
+                    <q-input label="Store ID" outlined dense v-model="commissions.selected.store_id" disable>
+                      <template v-slot:after>
+                        <q-btn color="teal-5" :loading="commissions.save.btn.loading" @click="medium = true" label="Edit Id"></q-btn>
+                      </template>
+                    </q-input>
                     <q-input label="Unpaid Balance" outlined dense v-model="commissions.selected.unpaid"></q-input>
+                    <q-select outlined emit-value map-options dense option-label="aff_type"
+                      v-model="commissions.selected.aff_type_Id"
+                      :options="commissions.affiliate.select.login_ok.types"
+                      label="Affiliate Type" color="teal" options-selected-class="text-deep-orange"
+                    >
+                      <template v-slot:option="scope">
+                        <q-item v-bind="scope.itemProps">
+                          <q-item-section>
+                            <q-item-label>{{ scope.opt.aff_type }}</q-item-label>
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
                   </div>
-                  <div class="">network</div>
+                  <div class="q-pt-sm q-gutter-sm">
+                      <q-btn dense color="primary" :loading="commissions.save.btn.loading" @click="saveSettings" label="Save"></q-btn>
+                    </div>
                 </q-tab-panel>
 
                 <q-tab-panel name="affiliate">
@@ -208,7 +227,89 @@
             </div>
 
             <div>
-              <!-- save -->
+              <!-- Store ID dialog -->
+              <q-dialog
+                v-model="medium"
+              >
+                <q-card class="row q-pa-md" style="width: 1000px; max-width: 80vw;">
+                  <q-card-section class="col-md-6">
+                    <q-table dense
+                      row-key="name" v-model:pagination="customtable.pagination"
+                      :rows="commissions.table.rows"
+                      :columns="customtable.columns"
+                      :filter="commissions.table.filter"
+                      :loading="commissions.table.loading"
+                    >
+                      <template v-slot:top>
+                        <q-input outlined dense debounce="300" 
+                          label="Search" color="primary" v-model="commissions.table.filter"
+                          @keydown.enter.prevent="getAll"
+                          >
+                          <template v-if="commissions.table.filter" v-slot:append>
+                            <q-icon name="cancel" @click.stop="clearFilter" class="cursor-pointer" />
+                          </template>
+                        </q-input>
+                      </template>
+
+                      <template v-slot:body="props">
+                        <q-tr :props="props" style="cursor:pointer" @click="showDetails(props.row.id)">
+                          <q-td key="login_ok" :props="props" style="width:50px">
+                            <div class="text-pre-wrap" v-if="props.row.login_ok == 1">
+                              <q-avatar size="xs" color="green-10" class="text-white" icon="check"></q-avatar>
+                            </div>
+                            <div class="text-pre-wrap" v-if="props.row.login_ok == 0">
+                              <q-avatar size="xs" color="red-10" class="text-white" icon="close"></q-avatar>
+                            </div>
+                            <div class="text-pre-wrap" v-if="props.row.login_ok === null">-</div>
+                          </q-td>
+                          <q-td key="name" :props="props">
+                            {{ props.row.name }}
+                          </q-td>
+                          <q-td key="unpaid" :props="props">
+                            <div class="text-pre-wrap" v-if="props.row.unpaid !== null">$ {{props.row.unpaid}}</div>
+                            <div class="text-pre-wrap" v-if="props.row.unpaid === null"> - </div>
+                          </q-td>
+                          <q-td key="settings_ok" :props="props">
+                            <div class="text-pre-wrap" v-if="props.row.settings_ok === 1"><q-icon name="autorenew" /></div>
+                            <div class="text-pre-wrap" v-if="props.row.settings_ok !== 1">-</div>
+                          </q-td>
+                          
+                        </q-tr>
+                      </template>
+
+                      <template v-slot:bottom >
+                        <div style="margin:0 auto">
+                          <q-btn round dense flat
+                            icon="chevron_left" color="grey-8"
+                            v-if="commissions.table.pagination.page > 1"
+                            @click="step('down')"
+                          />
+
+                          <span>Page {{commissions.table.pagination.page}} of {{commissions.table.pagination.lastpage}}</span>
+                          <q-btn round dense flat
+                            icon="chevron_right" color="grey-8"
+                            v-if="commissions.table.pagination.lastpage != commissions.table.pagination.page "
+                            @click="step('up')"
+                          />
+                        </div>
+                      </template>
+                    </q-table>
+                  </q-card-section>
+
+                  <q-card-section class="col-md-6">
+                    <div class="q-gutter-sm">
+                      <q-space/>
+                      <span style="font-size:18px;font-weight:bold">Store Name: {{commissions.selected.name}}</span>
+                      <q-input label="Store ID" outlined dense v-model="commissions.selected.store_id"/>
+                      <q-card-actions align="right">
+                        <q-btn label="Set Store ID" color="primary" v-close-popup />
+                      </q-card-actions>
+                    </div>
+                  </q-card-section>
+
+                  
+                </q-card>
+              </q-dialog>
             </div>
 
           </q-card-section>
@@ -219,9 +320,35 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
+  setup() {
+    return {
+      small: ref(false),
+      medium: ref(false),
+      fullWidth: ref(false),
+      fullHeight: ref(false)
+    }
+  },
+
   data () {
     return {
+      customtable: {
+        pagination: {
+          descending: false,
+          page: 1,
+          rowsNumber: 10,
+          rowsperpage: [],
+          max:0,
+          display: false,
+          lastpage: 0,
+        },
+        columns: [
+          { name: 'login_ok', align: 'left', label: 'L', field: 'login_ok', sortable: true },
+          { name: 'name', align: 'left', label: 'Name', field: 'name', sortable: true }
+        ],
+      },
       commissions: {
         table: {
           rows: [],
@@ -251,7 +378,8 @@ export default {
                 { label: 'Valid', value: 1, icon: 'check', color: 'green-10' },
                 { label: 'Invalid Login', value: 0, icon: 'close', color: 'red-10' },
                 { label: 'Unset', value: null, icon: 'block', color: 'grey-10' },
-              ]
+              ],
+              types: []
             }
           }
         },
@@ -321,6 +449,18 @@ export default {
         })
     },
 
+    getAffTypes() {
+      this.$api.get('/manage/getAffTypes', {
+      })
+      .then(response => {
+        this.commissions.affiliate.select.login_ok.types = response.data.data
+      })
+    },
+
+    showEditStoreId () {
+       this.$refs.EditStoreId.medium = true
+    },
+
     clearFilter() {
       this.commissions.table.filter = null
       this.getAll()
@@ -328,6 +468,12 @@ export default {
 
     showDetails(id) {
       this.commissions.selected = this.commissions.table.rows.filter(x => x.id === id)[0]
+      
+      const aff_id = this.commissions.selected.aff_type_Id
+      // console.log(this.commissions.selected)
+      // console.log(this.commissions.selected.aff_type_Id)
+      const aff_type = this.commissions.affiliate.select.login_ok.types.filter(x => x.id === aff_id)[0]
+      this.commissions.selected.aff_type_Id = aff_type
       
     },
 
@@ -402,6 +548,7 @@ export default {
 
   created () {
     this.getAll()
+    this.getAffTypes()
   }
 }
 </script>
