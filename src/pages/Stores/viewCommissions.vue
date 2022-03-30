@@ -76,7 +76,7 @@
                   @keydown.enter.prevent="getAll"
                   >
                   <template v-if="commissions.table.filter" v-slot:append>
-                    <q-icon name="cancel" @click.stop="clearFilter" class="cursor-pointer" />
+                    <q-icon name="cancel" @click.stop="clearFilter(false)" class="cursor-pointer" />
                   </template>
                 </q-input>
               </template>
@@ -153,13 +153,17 @@
                   <div class="q-gutter-md">
                     <q-input label="Store ID" outlined dense v-model="commissions.selected.store_id" disable>
                       <template v-slot:after>
-                        <q-btn color="teal-5" :loading="commissions.save.btn.loading" @click="medium = true" label="Edit Id"></q-btn>
+                        <q-btn color="teal-5" :loading="commissions.save.btn.loading" @click="showEditStoreId" label="Edit Id"></q-btn>
                       </template>
                     </q-input>
                     <q-input label="Unpaid Balance" outlined dense v-model="commissions.selected.unpaid"></q-input>
-                    <q-select outlined emit-value map-options dense option-label="aff_type"
+                    <q-select outlined dense
+                      emit-value
+                      map-options
                       v-model="commissions.selected.aff_type_Id"
                       :options="commissions.affiliate.select.login_ok.types"
+                      option-label="aff_type"
+                      option-value="id"
                       label="Affiliate Type" color="teal" options-selected-class="text-deep-orange"
                     >
                       <template v-slot:option="scope">
@@ -229,81 +233,54 @@
             <div>
               <!-- Store ID dialog -->
               <q-dialog
-                v-model="medium"
+                v-model="fullWidth"
               >
-                <q-card class="row q-pa-md" style="width: 1000px; max-width: 80vw;">
+                <q-card class="row q-pa-md" style="width: 1000px; height: 900px; max-width: 80vw;">
                   <q-card-section class="col-md-6">
-                    <q-table dense
-                      row-key="name" v-model:pagination="customtable.pagination"
-                      :rows="commissions.table.rows"
-                      :columns="customtable.columns"
-                      :filter="commissions.table.filter"
-                      :loading="commissions.table.loading"
-                    >
-                      <template v-slot:top>
-                        <q-input outlined dense debounce="300" 
-                          label="Search" color="primary" v-model="commissions.table.filter"
-                          @keydown.enter.prevent="getAll"
-                          >
-                          <template v-if="commissions.table.filter" v-slot:append>
-                            <q-icon name="cancel" @click.stop="clearFilter" class="cursor-pointer" />
-                          </template>
-                        </q-input>
-                      </template>
+                    <div class="q-gutter-sm" style="max-width: 550px">
+                      <q-space/>
+                      <span style="font-size:18px;font-weight:bold">Search Store</span>
+                      <q-input outlined dense debounce="300" 
+                        label="" color="primary" v-model="storeSearchData.search_str" :disable="storeSearchData.loading"
+                        >
+                        <template v-if="storeSearchData.search_str" v-slot:append>
+                          <q-icon name="cancel" @click.stop="clearFilter(true)" class="cursor-pointer" />
+                        </template>
+                        <template v-slot:after>
+                          <q-btn color="primary" :loading="storeSearchData.loading" @click="storeSearch" label="Search" />
+                        </template>
+                      </q-input>
+                      <q-space/>
+                      <span v-if="storeSearchData.noResult" style="font-size:18px;">No results for "{{storeSearchData.search_str}}"</span>
+                      <div v-if="storeSearchData.search_result != ''">
+                        <q-list v-for="store in storeSearchData.search_result" :key="store.name"  :loading="storeSearchData.loading" bordered>
+                          <q-item clickable v-ripple @click="setStoreId(store.store_id)">
+                            <q-item-section avatar>
+                              <div class="text-pre-wrap" v-if="store.login_ok == 1">
+                                <q-avatar size="xs" color="green-10" class="text-white" icon="check"></q-avatar>
+                              </div>
+                              <div class="text-pre-wrap" v-if="store.login_ok == 0">
+                                <q-avatar size="xs" color="red-10" class="text-white" icon="close"></q-avatar>
+                              </div>
+                              <div class="text-pre-wrap" v-if="store.login_ok === null">-</div>
+                            </q-item-section>
 
-                      <template v-slot:body="props">
-                        <q-tr :props="props" style="cursor:pointer" @click="showDetails(props.row.id)">
-                          <q-td key="login_ok" :props="props" style="width:50px">
-                            <div class="text-pre-wrap" v-if="props.row.login_ok == 1">
-                              <q-avatar size="xs" color="green-10" class="text-white" icon="check"></q-avatar>
-                            </div>
-                            <div class="text-pre-wrap" v-if="props.row.login_ok == 0">
-                              <q-avatar size="xs" color="red-10" class="text-white" icon="close"></q-avatar>
-                            </div>
-                            <div class="text-pre-wrap" v-if="props.row.login_ok === null">-</div>
-                          </q-td>
-                          <q-td key="name" :props="props">
-                            {{ props.row.name }}
-                          </q-td>
-                          <q-td key="unpaid" :props="props">
-                            <div class="text-pre-wrap" v-if="props.row.unpaid !== null">$ {{props.row.unpaid}}</div>
-                            <div class="text-pre-wrap" v-if="props.row.unpaid === null"> - </div>
-                          </q-td>
-                          <q-td key="settings_ok" :props="props">
-                            <div class="text-pre-wrap" v-if="props.row.settings_ok === 1"><q-icon name="autorenew" /></div>
-                            <div class="text-pre-wrap" v-if="props.row.settings_ok !== 1">-</div>
-                          </q-td>
-                          
-                        </q-tr>
-                      </template>
-
-                      <template v-slot:bottom >
-                        <div style="margin:0 auto">
-                          <q-btn round dense flat
-                            icon="chevron_left" color="grey-8"
-                            v-if="commissions.table.pagination.page > 1"
-                            @click="step('down')"
-                          />
-
-                          <span>Page {{commissions.table.pagination.page}} of {{commissions.table.pagination.lastpage}}</span>
-                          <q-btn round dense flat
-                            icon="chevron_right" color="grey-8"
-                            v-if="commissions.table.pagination.lastpage != commissions.table.pagination.page "
-                            @click="step('up')"
-                          />
-                        </div>
-                      </template>
-                    </q-table>
+                            <q-item-section>{{store.name}}</q-item-section>
+                          </q-item>
+                        </q-list>
+                      </div>
+                    </div>
                   </q-card-section>
 
                   <q-card-section class="col-md-6">
                     <div class="q-gutter-sm">
                       <q-space/>
-                      <span style="font-size:18px;font-weight:bold">Store Name: {{commissions.selected.name}}</span>
-                      <q-input label="Store ID" outlined dense v-model="commissions.selected.store_id"/>
-                      <q-card-actions align="right">
-                        <q-btn label="Set Store ID" color="primary" v-close-popup />
-                      </q-card-actions>
+                      <span style="font-size:18px;font-weight:bold">Store Name: {{storeSearchData.selected.name}}</span>
+                      <q-input label="Store ID" outlined dense v-model="storeSearchData.selected.store_id">
+                        <template v-slot:after>
+                          <q-btn label="Set Store ID" color="primary" v-close-popup />
+                        </template>
+                      </q-input>
                     </div>
                   </q-card-section>
 
@@ -349,6 +326,13 @@ export default {
           { name: 'name', align: 'left', label: 'Name', field: 'name', sortable: true }
         ],
       },
+      storeSearchData: {
+        search_str: '',
+        search_result: [],
+        loading: false,
+        noResult: false,
+        selected: []
+      },
       commissions: {
         table: {
           rows: [],
@@ -359,6 +343,7 @@ export default {
             { name: 'settings_ok', align: 'right', label: 'Auto', field: 'settings_ok', sortable: true }
           ],
           filter: '',
+          dialogFilter: '',
           loading: false,
           pagination: {
             descending: false,
@@ -419,7 +404,7 @@ export default {
 
   methods: {
     getAll() {
-      this.commissions.selected = []
+      // this.commissions.selected = []
       this.commissions.table.rows = []
       this.commissions.table.loading = true
 
@@ -437,6 +422,8 @@ export default {
         params.push(['name', 'ilike', "'%" + this.commissions.table.filter + "%'"])
       }
 
+      
+
       this.$api.post('/commissions/all', {
         page: this.commissions.table.pagination.page,
         params: JSON.stringify(params)
@@ -449,6 +436,29 @@ export default {
         })
     },
 
+    storeSearch() {
+      const params = []
+      this.storeSearchData.loading = true
+      if(this.storeSearchData.search_str !== '') {
+        params.push(['name', 'ilike', "'%" + this.storeSearchData.search_str + "%'"])
+      }
+      this.$api.post('/commissions/all', {
+        page: 1,
+        params: JSON.stringify(params)
+      })
+      .then(response => {
+        this.storeSearchData.search_result = response.data.store_commissions
+        this.storeSearchData.noResult = this.storeSearchData.search_result == ''
+        this.storeSearchData.loading = false
+      })
+      
+    },
+
+    setStoreId(id) {
+      this.storeSearchData.selected.store_id = id
+      this.commissions.selected.store_id = this.storeSearchData.selected.store_id
+    },
+
     getAffTypes() {
       this.$api.get('/manage/getAffTypes', {
       })
@@ -458,23 +468,23 @@ export default {
     },
 
     showEditStoreId () {
-       this.$refs.EditStoreId.medium = true
+       this.fullWidth = true
+       this.storeSearchData.selected = this.commissions.selected
     },
 
-    clearFilter() {
-      this.commissions.table.filter = null
+    clearFilter(isDialog) {
+      if (isDialog) {
+        this.storeSearchData.search_str = ''
+        this.storeSearchData.search_result = []
+        this.storeSearchData.noResult = false
+      } else {
+        this.commissions.table.filter = ''
+      }
       this.getAll()
     },
 
     showDetails(id) {
-      this.commissions.selected = this.commissions.table.rows.filter(x => x.id === id)[0]
-      
-      const aff_id = this.commissions.selected.aff_type_Id
-      // console.log(this.commissions.selected)
-      // console.log(this.commissions.selected.aff_type_Id)
-      const aff_type = this.commissions.affiliate.select.login_ok.types.filter(x => x.id === aff_id)[0]
-      this.commissions.selected.aff_type_Id = aff_type
-      
+      this.commissions.selected = this.commissions.table.rows.filter(x => x.id === id)[0]     
     },
 
     step(a) {
