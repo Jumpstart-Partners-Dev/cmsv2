@@ -157,6 +157,7 @@
                       </template>
                     </q-input>
                     <q-input label="Unpaid Balance" outlined dense v-model="commissions.selected.unpaid"></q-input>
+                    {{ commissions.selected }}
                     <q-select outlined dense
                       emit-value
                       map-options
@@ -545,6 +546,8 @@ export default {
     },
 
     saveSettings() {
+      console.log('test')
+      console.log(this.commissions.selected)
       this.commissions.save.btn.loading = true
       this.$api.post('/commissions/updateSettings', {
         id: this.commissions.selected.id,
