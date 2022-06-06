@@ -42,8 +42,9 @@
                   <span class="text-h6" v-if="props.row.firstname === null">(Profile Not Set)</span>
                   <div>
                     <span class="q-mr-sm" v-if="props.row.firstname === null" style="font-size:13px; text-decoration: underline; cursor: pointer"></span> 
-                    <q-btn dense size="sm" color="white" text-color="black" class="q-mr-sm" label="Edit" icon="edit"></q-btn>
-                    <q-btn dense size="sm" color="white" text-color="red-10" class="q-mr-sm" label="Delete" icon="delete"></q-btn>
+                    <q-btn dense size="sm" color="white" text-color="black" class="q-mr-sm" label="Edit" icon="edit" @click="showEditUserModal(props.row)"></q-btn>
+                    
+                    <q-btn dense size="sm" color="white" text-color="red-10" class="q-mr-sm" label="Delete" icon="delete" @click="deleteUser(props.row.user_id)"></q-btn>
                   </div>
                 </q-card-section>
                 <q-separator />
@@ -56,31 +57,35 @@
                       <q-item-label caption>{{ col.value }}</q-item-label>
                     </q-item-section>
                   </q-item>
+
                   <q-item>
                     <q-item-section>
                       <q-item-label>Enabled</q-item-label>
                     </q-item-section>
                     <q-item-section avatar>
-                      <q-toggle dense color="blue" v-model="props.row.enabled" @update:model-value="toggleAble(props.row.id, props.row.enabled)" 
+                      <q-toggle dense color="blue" v-model="props.row.enabled" @update:model-value="toggleAble(props.row.user_id, props.row.enabled)" 
                         :false-value="0"
                         :true-value="1"/>
                     </q-item-section>
                   </q-item>
                   <q-item>
+
                     <q-item-section>
-                      <q-item-label>Password</q-item-label>
+                      <q-item-label>Password {{props.row.user_id}} </q-item-label>
                     </q-item-section>
                     <q-item-section avatar>
-                      <q-item-label>********** <q-btn size="md" dense flat class="text-yellow-10" style="" label="Reset" /></q-item-label>
-                      
+                      <q-item-label>**********<q-btn size="md" @click="showResetPassword(props.row.user_id)" dense flat class="text-yellow-10" style="" label="Reset" /></q-item-label>
+                      <reset-password ref="ResetPassword" :reload="reload" ></reset-password>
                     </q-item-section>
+                    
                   </q-item>
+
                   <q-item>
                     <q-item-section>
                       <q-item-label>Permissions</q-item-label>
                     </q-item-section>
                     <q-item-section avatar>
-                      <q-btn size="md" dense flat class="text-blue" style="" label="Set Permissions" />
+                      <q-btn :to="'/admin/users/permissions/' + props.row.user_id" size="md" dense flat class="text-blue" style="" label="Set Permissions" />
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -93,26 +98,34 @@
     </div>
 
     <new-user ref="NewUser" :reload="reload" :users="users"></new-user>
+    <edit-user ref="EditUser" :reload="reload"></edit-user>
+    
   </q-page>
 </template>
 
 <script>
 import NewUser from './components/NewUser'
+import ResetPassword from './components/ResetPassword'
+import EditUser from './components/EditUser'
+// import UserPermission from './components/UserPermission'
 
 export default {
   components: {
-    NewUser
+    NewUser,
+    ResetPassword,
+    EditUser
   },
 
   data () {
     return {
+      changepassVisible: false,
       users: {
+        password: '',
         table: {
           rows: [
-            { id: 1, firstname: null, username: 'belarmino.joshua', enabled: 1},
           ],
           columns: [
-            { name: 'id', align: 'center', label: 'ID', field: 'id' },
+            { name: 'id', align: 'center', label: 'ID', field: 'user_id' },
             { name: 'username', align: 'center', label: 'Username', field: 'username', sortable: true },
             { name: 'enabled', align: 'center', label: 'Enabled', field: 'enabled', sortable: true },
           ],
@@ -130,6 +143,28 @@ export default {
       this.$refs.NewUser.generatePassword()
       this.$refs.NewUser.dialog.display = true
     },
+    showEditUserModal (user) {
+      // this.$refs.EditUser.clearForm()
+      this.$refs.EditUser.user = user
+      this.$refs.EditUser.dialog.form.fields.username = user.username
+      this.$refs.EditUser.generatePassword()
+      this.$refs.EditUser.dialog.display = true
+    },
+    showResetPassword (id) {
+      this.$refs.ResetPassword.dialog.display = true
+      this.$refs.ResetPassword.generatePassword()
+      this.$refs.ResetPassword.user_id = id
+    },
+    deleteUser (id) {
+      this.users.table.loading = true
+      this.$api.post('/users/delete/' + id, function() {})
+        .then(response => {
+          this.reload()
+          // this.users.table.loading = false
+        })
+    },
+    showUserPermission (user) {
+    },
 
     reload () {
       this.users.table.rows = []
@@ -141,6 +176,10 @@ export default {
           }
           this.users.table.loading = false
         })
+    },
+
+    resetPassword (id) {
+      this.changepassVisible = !this.changepassVisible
     },
 
     toggleAble (id, state) {

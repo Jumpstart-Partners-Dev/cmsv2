@@ -12,6 +12,7 @@ const routes = [
       { path: '/manage/sitemap', component: () => import('pages/manage/Sitemap.vue'), },
       { path: '/stores/commissions', component: () => import('pages/Stores/viewCommissions.vue'), },
       { path: '/admin/users', component: () => import('pages/admin/users.vue')},
+      { path: '/admin/users/permissions/:id', component: () => import('pages/admin/userPermission.vue')},
       { path: '/blogs', component: () => import('pages/Blogs.vue'), },
       { path: '/store/:id', component: () => import('pages/Stores/viewStore.vue') }
     ]
