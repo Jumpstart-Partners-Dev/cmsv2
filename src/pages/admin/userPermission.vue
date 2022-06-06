@@ -7,7 +7,7 @@
       row-key="permissions"
       :loading= "loading"
       selection="multiple"
-      no-data-label="alaws..."
+      no-data-label="no data"
       v-model:selected="selected"
       grid
     >
